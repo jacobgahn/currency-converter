@@ -1,23 +1,25 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { checkSchema, validationResult } from "express-validator";
-import jwt from "jsonwebtoken";
 import { getConvertedCurrencyAmount } from "../services/coinbase/currencyConvert";
 import db from "../db";
 import { InsertRequest, requests } from "../db/schema";
 import { rateLimiting, authenticate } from "../middleware";
+import { getRequestUser } from "../utils/auth";
+import { ConvertRequest } from "../types/requestTypes";
+
 var express = require("express");
 var router = express.Router();
 
 // Add query parser middleware
 router.use(express.urlencoded({ extended: true }));
 
-interface ConvertRequest {
+export interface ConvertRequestParams {
 	from: string;
 	amount: number;
 	to: string;
 }
 
-interface ConvertResponse {
+interface ConvertResponseParams {
 	targetAmount: number;
 	exchangeRate: number;
 	timestamp: Date;
@@ -53,7 +55,7 @@ router.get(
 	authenticate,
 	rateLimiting,
 	validateConvert,
-	async function (req: Request<{}, {}, {}, ConvertRequest>, res: Response) {
+	async function (req: ConvertRequest, res: Response) {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
 			return res.status(400).json({ errors: errors.array() });
@@ -63,14 +65,7 @@ router.get(
 		const to = req.query.to;
 		const amount = req.query.amount;
 
-		// TODO refactor to use middleware
-		const auth = req.headers.authorization;
-		const token = auth && auth.split(" ")[1];
-		const payload = token && jwt.decode(token);
-		if (!payload || typeof payload !== "object" || !("user_id" in payload)) {
-			return res.status(403).json({ error: "Invalid token payload" });
-		}
-		const user_id = Number(payload && payload.user_id);
+		const user_id = getRequestUser(req);
 
 		const { targetAmount, exchangeRate } = await getConvertedCurrencyAmount(
 			from,
@@ -88,7 +83,7 @@ router.get(
 		};
 		await db.insert(requests).values(insertRequest);
 
-		const response: ConvertResponse = {
+		const response: ConvertResponseParams = {
 			targetAmount: targetAmount,
 			exchangeRate: exchangeRate,
 			timestamp: new Date(),

@@ -28,7 +28,7 @@ export const rateLimiting = async (
 		})
 	);
 
-	const user_id = getRequestUser(req, res);
+	const user_id = getRequestUser(req);
 
 	const userRequests = await db
 		.select()

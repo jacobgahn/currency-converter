@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { getRequestUser } from "../utils/auth";
 
 export const authenticate = async (
 	req: Request,
@@ -14,7 +15,12 @@ export const authenticate = async (
 
 	try {
 		// TODO: validate token against internal user service
-		next();
+		try {
+			const user = getRequestUser(req);
+			next();
+		} catch (error) {
+			return res.status(403).json({ error: "Invalid token payload" });
+		}
 	} catch (error) {
 		return res.status(403).json({ error: "Invalid authentication token" });
 	}

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { ConvertRequest } from "../types/requestTypes";
 
-export const getRequestUser = (req: Request, res: Response) => {
+export const getRequestUser = (req: Request | ConvertRequest) => {
 	const auth = req.headers.authorization;
 	const token = auth && auth.split(" ")[1];
 	const payload = token && jwt.decode(token);
