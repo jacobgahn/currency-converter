@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { checkSchema, query, validationResult } from "express-validator";
+import { checkSchema, validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import { getConvertedCurrencyAmount } from "../services/coinbase/currencyConvert";
 import db from "../db";
 import { InsertRequest, requests } from "../db/schema";
+import { rateLimiting, authenticate } from "../middleware";
 var express = require("express");
 var router = express.Router();
 
@@ -21,22 +22,6 @@ interface ConvertResponse {
 	exchangeRate: number;
 	timestamp: Date;
 }
-
-const authenticate = async (req: Request, res: Response, next: Function) => {
-	const authHeader = req.headers.authorization;
-	const token = authHeader && authHeader.split(" ")[1];
-
-	if (!token) {
-		return res.status(401).json({ error: "Missing authentication token" });
-	}
-
-	try {
-		// TODO: validate token against internal user service
-		next();
-	} catch (error) {
-		return res.status(403).json({ error: "Invalid authentication token" });
-	}
-};
 
 const validateConvert = checkSchema({
 	from: {
@@ -65,7 +50,8 @@ const validateConvert = checkSchema({
 
 router.get(
 	"/",
-	authenticate, // Add auth middleware before validation
+	authenticate,
+	rateLimiting,
 	validateConvert,
 	async function (req: Request<{}, {}, {}, ConvertRequest>, res: Response) {
 		const errors = validationResult(req);
@@ -85,8 +71,6 @@ router.get(
 			return res.status(403).json({ error: "Invalid token payload" });
 		}
 		const user_id = Number(payload && payload.user_id);
-
-		// TODO: add rate limiting
 
 		const { targetAmount, exchangeRate } = await getConvertedCurrencyAmount(
 			from,

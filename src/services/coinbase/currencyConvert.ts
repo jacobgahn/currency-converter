@@ -6,7 +6,6 @@ export const fetchCoinbaseExchangeRate = async (
 		`https://api.coinbase.com/v2/prices/${fromCurrency}-${toCurrency}/buy`
 	);
 	const data = await response.json();
-	console.log(data);
 	return Number(data.data.amount);
 };
 
