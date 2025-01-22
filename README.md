@@ -24,10 +24,10 @@ npx drizzle-kit push
 npm run dev
 ```
 
-5. Request a conversion
+5. Request a conversion (get token from jwt.io with user_id claim)
 
 ```bash
-curl -X GET "http://localhost:3000/convert?from=USD&to=BTC&amount=100" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxfQ.HqfBqMQXjCge8RyIepyGkT2arZPD62bIGwD36lKiUWk"
+curl -X GET "http://localhost:3000/convert?from=USD&to=BTC&amount=100" -H "Authorization: Bearer <token>"
 ```
 
 6. Run tests
