@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { checkSchema, query, validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import { getConvertedCurrencyAmount } from "../services/coinbase/currencyConvert";
-
+import db from "../db";
+import { InsertRequest, requests } from "../db/schema";
 var express = require("express");
 var router = express.Router();
 
@@ -76,23 +77,32 @@ router.get(
 		const to = req.query.to;
 		const amount = req.query.amount;
 
+		// TODO refactor to use middleware
 		const auth = req.headers.authorization;
 		const token = auth && auth.split(" ")[1];
 		const payload = token && jwt.decode(token);
 		if (!payload || typeof payload !== "object" || !("user_id" in payload)) {
 			return res.status(403).json({ error: "Invalid token payload" });
 		}
-		const user_id = payload && payload.user_id;
+		const user_id = Number(payload && payload.user_id);
 
-		console.log("User ID:", user_id);
 		// TODO: add rate limiting
-		// TODO: save request to db
 
 		const { targetAmount, exchangeRate } = await getConvertedCurrencyAmount(
 			from,
 			to,
 			amount
 		);
+
+		const insertRequest: InsertRequest = {
+			userId: user_id,
+			currency: from,
+			amount: amount,
+			convertedAmount: targetAmount.toString(),
+			exchangeRate: exchangeRate.toString(),
+			timestamp: new Date(),
+		};
+		await db.insert(requests).values(insertRequest);
 
 		const response: ConvertResponse = {
 			targetAmount: targetAmount,
