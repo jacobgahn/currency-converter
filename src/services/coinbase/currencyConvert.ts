@@ -10,6 +10,23 @@ export const fetchCoinbaseExchangeRate = async (
 	return Number(data.data.amount);
 };
 
+export const convertCurrency = async (exchangeRate: number, amount: number) => {
+	if (exchangeRate <= 0) {
+		throw new Error("Invalid exchange rate");
+	}
+
+	if (amount < 0) {
+		throw new Error("Invalid amount");
+	}
+
+	try {
+		return exchangeRate * amount;
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+};
+
 export const getConvertedCurrencyAmount = async (
 	from: string,
 	to: string,
@@ -19,7 +36,7 @@ export const getConvertedCurrencyAmount = async (
 	const exchangeRate = await fetchCoinbaseExchangeRate(from, to);
 
 	return {
-		targetAmount: exchangeRate * amount,
+		targetAmount: await convertCurrency(exchangeRate, amount),
 		exchangeRate: exchangeRate,
 	};
 };
