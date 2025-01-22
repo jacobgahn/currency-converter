@@ -11,8 +11,6 @@ import { currencyFieldValidator } from "../validators/currencyValidator";
 var express = require("express");
 var router = express.Router();
 
-router.use(express.urlencoded({ extended: true }));
-
 export interface ConvertRequestParams {
 	from: string;
 	amount: number;
@@ -29,9 +27,8 @@ export const validateConvert = checkSchema({
 	...currencyFieldValidator("from"),
 	amount: {
 		in: ["query"],
-		isNumeric: true,
+		isFloat: true,
 		errorMessage: "Amount must be a valid number",
-		toFloat: true,
 	},
 	...currencyFieldValidator("to"),
 });
@@ -58,13 +55,13 @@ router.get(
 		const { targetAmount, exchangeRate } = await getConvertedCurrencyAmount(
 			from,
 			to,
-			amount
+			Number(amount)
 		);
 
 		const insertRequest: InsertRequest = {
 			userId: user_id,
 			currency: from,
-			amount: amount,
+			amount: amount.toString(),
 			convertedAmount: targetAmount.toString(),
 			exchangeRate: exchangeRate.toString(),
 			timestamp: new Date(),

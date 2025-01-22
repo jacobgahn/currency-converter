@@ -12,7 +12,7 @@ const requests = pgTable("requests", {
 	id: serial("id").primaryKey(),
 	userId: integer("user_id").notNull(),
 	currency: text("currency").notNull(),
-	amount: integer("amount").notNull(),
+	amount: numeric("amount").notNull(),
 	convertedAmount: numeric("converted_amount").notNull(),
 	exchangeRate: numeric("exchange_rate").notNull(),
 	timestamp: timestamp("timestamp").default(sql`CURRENT_TIMESTAMP`),

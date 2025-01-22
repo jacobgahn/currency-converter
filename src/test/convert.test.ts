@@ -1,8 +1,11 @@
 import request from "supertest";
 import { fetchCoinbaseExchangeRate } from "../services/coinbase/currencyConvert";
-
+import jwt from "jsonwebtoken";
 // TODO: Use app for supertest instead of baseUrl, to enable mocking, etc
 const baseUrl = "http://localhost:3000";
+
+const mockUserId = 123;
+const mockToken = jwt.sign({ user_id: mockUserId }, "secret");
 
 jest.mock("../services/coinbase/currencyConvert", () => ({
 	fetchCoinbaseExchangeRate: jest.fn(),
@@ -15,11 +18,8 @@ describe("GET /convert", () => {
 
 		const response = await request(baseUrl)
 			.get("/convert")
-			.set(
-				"Authorization",
-				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxfQ.HqfBqMQXjCge8RyIepyGkT2arZPD62bIGwD36lKiUWk"
-			)
-			.query({ from: "USD", to: "EUR", amount: 800 });
+			.set("Authorization", `Bearer ${mockToken}`)
+			.query({ from: "USD", to: "EUR", amount: 800.01 });
 
 		expect(response.status).toBe(200);
 		// TODO: Commented out until mocking and supertest works properly
@@ -33,10 +33,7 @@ describe("GET /convert", () => {
 	it("should return 400 if validation fails", async () => {
 		const response = await request(baseUrl)
 			.get("/convert")
-			.set(
-				"Authorization",
-				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxfQ.HqfBqMQXjCge8RyIepyGkT2arZPD62bIGwD36lKiUWk"
-			)
+			.set("Authorization", `Bearer ${mockToken}`)
 			.query({ from: "US", to: "EUR", amount: "invalid" });
 
 		expect(response.status).toBe(400);
