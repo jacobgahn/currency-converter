@@ -15,6 +15,7 @@ export const authenticate = async (
 
 	try {
 		// TODO: validate token against internal user service
+		// Assuming here that the user records are managed by the user service
 		try {
 			const user = getRequestUser(req);
 			next();

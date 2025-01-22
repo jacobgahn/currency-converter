@@ -1,10 +1,20 @@
 import request from "supertest";
 import { getConvertedCurrencyAmount } from "../services/coinbase/currencyConvert";
 import jwt from "jsonwebtoken";
+import db from "../db";
+import { requests } from "../db/schema";
+import { eq } from "drizzle-orm";
 const app = require("../../app");
 
-const mockUserId = 123;
+// Quick solution for testing within the same database instance
+// Assumption is that the user records start at 1 therefore 0 is okay for testing and cleanup
+// Improvement would be to use a different database for testing
+const mockUserId = 0;
 const mockToken = jwt.sign({ user_id: mockUserId }, "secret");
+
+afterEach(async () => {
+	await db.delete(requests).where(eq(requests.userId, mockUserId));
+});
 
 jest.mock("../services/coinbase/currencyConvert", () => {
 	const originalModule = jest.requireActual(
