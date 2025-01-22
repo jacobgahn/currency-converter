@@ -9,6 +9,6 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true
 	},
-	"include": ["app.ts", "src/routes/**/*.ts", "bin/www.ts"],
+	"include": ["app.js", "src/routes/**/*.ts", "bin/www.js"],
 	"exclude": ["node_modules", "dist"]
 }

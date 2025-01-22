@@ -5,11 +5,11 @@
   "scripts": {
     "build": "tsc",
     "start": "node ./dist/bin/www.js",
-    "dev": "ts-node-dev --respawn --transpile-only ./bin/www.ts",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "test": "jest"
-  },
+    "dev": "ts-node-dev --respawn --transpile-only ./bin/www.js",
+		"lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+		"lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+		"test": "jest --forceExit"
+	},
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",

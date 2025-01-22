@@ -31,7 +31,6 @@ export const getConvertedCurrencyAmount = async (
 	to: string,
 	amount: number
 ) => {
-	// TODO move to fetch method
 	const exchangeRate = await fetchCoinbaseExchangeRate(from, to);
 
 	return {
