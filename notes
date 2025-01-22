@@ -1,0 +1,16 @@
+db models
+request
+    user_id
+    currency
+    amount
+    result
+    timestamp
+
+currency
+USD EUR BTC ETH
+
+auth
+conversion
+https://developers.coinbase.com/api/v2#get-exchange-rates
+
+Authorization: Bearer dab458d6-8352-42e6-88a1-88acc76b4e43

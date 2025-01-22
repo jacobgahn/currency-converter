@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "module": "commonjs",
+      "strict": true,
+      "esModuleInterop": true,
+      "outDir": "./dist",
+      "rootDir": "./",
+      "resolveJsonModule": true,
+      "skipLibCheck": true
+    },
+    "include": ["app.ts", "routes/**/*.ts", "bin/www.ts"]
+  }

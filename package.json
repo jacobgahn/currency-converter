@@ -1,0 +1,21 @@
+{
+  "name": "currency-converter",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node ./dist/bin/www.js"
+  },
+	"dependencies": {
+		"cookie-parser": "~1.4.4",
+		"debug": "~2.6.9",
+		"express": "^4.21.2",
+		"http-errors": "~1.6.3",
+		"morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.7",
+    "typescript": "^5.7.3"
+  }
+}
