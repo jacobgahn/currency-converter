@@ -6,11 +6,11 @@ import { InsertRequest, requests } from "../db/schema";
 import { rateLimiting, authenticate } from "../middleware";
 import { getRequestUser } from "../utils/auth";
 import { ConvertRequest } from "../types/requestTypes";
+import { currencyFieldValidator } from "../validators/currencyValidator";
 
 var express = require("express");
 var router = express.Router();
 
-// Add query parser middleware
 router.use(express.urlencoded({ extended: true }));
 
 export interface ConvertRequestParams {
@@ -25,29 +25,15 @@ interface ConvertResponseParams {
 	timestamp: Date;
 }
 
-const validateConvert = checkSchema({
-	from: {
-		in: ["query"],
-		isString: true,
-		isLength: {
-			options: { min: 3, max: 3 },
-			errorMessage: "Currency code must be 3 characters (e.g. USD, EUR, BTC)",
-		},
-	},
+export const validateConvert = checkSchema({
+	...currencyFieldValidator("from"),
 	amount: {
 		in: ["query"],
 		isNumeric: true,
 		errorMessage: "Amount must be a valid number",
 		toFloat: true,
 	},
-	to: {
-		in: ["query"],
-		isString: true,
-		isLength: {
-			options: { min: 3, max: 3 },
-			errorMessage: "Currency code must be 3 characters (e.g. USD, EUR, BTC)",
-		},
-	},
+	...currencyFieldValidator("to"),
 });
 
 router.get(
@@ -55,15 +41,17 @@ router.get(
 	authenticate,
 	rateLimiting,
 	validateConvert,
-	async function (req: ConvertRequest, res: Response) {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
+	async function (
+		req: ConvertRequest,
+		res: Response<ConvertResponseParams | { errors: any }>
+	) {
+		const validationErrors = validationResult(req);
+		if (!validationErrors.isEmpty()) {
+			res.status(400).json({ errors: validationErrors.array() });
+			return;
 		}
 
-		const from = req.query.from;
-		const to = req.query.to;
-		const amount = req.query.amount;
+		const { from, to, amount } = req.query;
 
 		const user_id = getRequestUser(req);
 

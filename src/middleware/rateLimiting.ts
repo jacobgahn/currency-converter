@@ -4,15 +4,15 @@ import { eq } from "drizzle-orm";
 import { isWeekend } from "../utils/datetime";
 import { getRequestUser } from "../utils/auth";
 import { Request, Response, NextFunction } from "express";
-
+import { REQUEST_LIMIT_WEEKEND, REQUEST_LIMIT_WEEKDAY } from "../constants";
 export const shouldRateLimit = (
 	userRequestsAmount: number,
 	requestDate: Date
 ) => {
 	const isRequestWeekend = isWeekend(requestDate);
 	return (
-		(isRequestWeekend && userRequestsAmount > 200) ||
-		(!isRequestWeekend && userRequestsAmount > 100)
+		(isRequestWeekend && userRequestsAmount > REQUEST_LIMIT_WEEKEND) ||
+		(!isRequestWeekend && userRequestsAmount > REQUEST_LIMIT_WEEKDAY)
 	);
 };
 

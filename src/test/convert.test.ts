@@ -22,6 +22,7 @@ describe("GET /convert", () => {
 			.query({ from: "USD", to: "EUR", amount: 800 });
 
 		expect(response.status).toBe(200);
+		// TODO: Commented out until mocking and supertest works properly
 		// expect(response.body).toEqual({
 		// 	targetAmount: 1000,
 		// 	exchangeRate: 1.25,
