@@ -3,8 +3,9 @@ import { Request, Response, NextFunction } from "express";
 var express = require("express");
 var router = express.Router();
 
-router.post("/", function (req: Request, res: Response, next: NextFunction) {
-	res.send("respond with a resource");
+/* GET home page. */
+router.get("/", function (req: Request, res: Response, next: NextFunction) {
+	res.send("Hello World\n");
 });
 
 module.exports = router;

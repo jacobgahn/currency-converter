@@ -9,5 +9,5 @@
       "resolveJsonModule": true,
       "skipLibCheck": true
     },
-    "include": ["app.ts", "routes/**/*.ts", "bin/www.ts"]
+    "include": ["app.ts", "src/routes/**/*.ts", "bin/www.ts"]
   }
